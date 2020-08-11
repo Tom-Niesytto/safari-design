@@ -3,6 +3,19 @@ package students;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+
+// This is effectively Predicate
+//interface Criterion<E> {
+//  boolean test(E s);
+//}
+//
+//class SmartStudentCriterion implements Criterion<Student> {
+//  @Override
+//  public boolean test(Student s) {
+//    return s.getGrade() > 65;
+//  }
+//}
 
 public class School {
   // Separation of concerns
@@ -19,10 +32,12 @@ public class School {
   // imagine we want to send smart students over a network, or to a database
   // do less => more reusable
   // If something must VARY at RUNTIME... It MUST BE A VARIABLE/EXPRESSION...
-  public static <E> List<Student> getSmartStudents(List<Student> students, int threshold) {
-    List<Student> result = new ArrayList<>();
-    for (Student s : students) {
-      if (s.getGrade() > threshold) {
+  // Not only "command" but also one variant of "higher order function"
+  // Example sort("behavior that orders two items")
+  public static <E> List<E> filter(List<E> students, Predicate<E> crit) {
+    List<E> result = new ArrayList<>();
+    for (E s : students) {
+      if (crit.test(s)) {
         result.add(s);
       }
     }
@@ -48,7 +63,9 @@ public class School {
         Student.ofNameGradeCourses("Jim", 55, "Art"),
         Student.ofNameGradeCourses("Sheila", 92, "Math", "Physics", "Astrophysics", "Quantum Mechanics")
     );
-    showSmartStudents(roster, 65);
+
+    // "Command" pattern -- pass argument primarily for its behavior (not its state)
+    showStudents(filter(roster, s -> s.getGrade() > 65));
     System.out.println("Two jims are one object? " + (roster.get(1) == roster.get(2)));
   }
 }
