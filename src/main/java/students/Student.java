@@ -1,7 +1,6 @@
 package students;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Student {
   private String name;
@@ -14,13 +13,22 @@ public class Student {
     this.courses = Arrays.asList(courses);
   }
 
+  private static HashMap<Student, Student> existing = new HashMap<>();
+
   public static Student ofNameGradeCourses(String name, int grade, String ... courses) {
+    Student candidate;
     if (name == null || grade < 0 || grade > 100) throw new IllegalArgumentException();
     if (grade > 75) {
-      return new VIPStudent(name, grade, courses);
+      candidate =  new VIPStudent(name, grade, courses);
     } else {
-      return new Student(name, grade, courses);
+      candidate = new Student(name, grade, courses);
     }
+    boolean newStudent = !existing.containsKey(candidate);
+    if (newStudent) {
+      existing.put(candidate, candidate);
+      return candidate;
+    }
+    else return existing.get(candidate);
   }
 
   public String getName() {
@@ -37,6 +45,19 @@ public class Student {
 
   public long getDonation() {
     return 0;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Student)) return false;
+    Student student = (Student) o;
+    return Objects.equals(getName(), student.getName());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName());
   }
 
   @Override
